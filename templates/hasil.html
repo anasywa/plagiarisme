@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Hasil Analisis</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        .loading-container {
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+        }
+        .progress-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .fade-in {
+            opacity: 0;
+            animation: fadeInAnimation 0.5s forwards;
+        }
+        @keyframes fadeInAnimation {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ 'danger' if category == 'error' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        
+        <div class="card shadow p-4">
+            <h2 class="mb-4 text-center">Hasil Analisis Plagiarisme</h2>
+            
+            <!-- Loading State -->
+            <div id="loading-state" class="loading-container" {% if hasil %}style="display: none;"{% endif %}>
+                <div class="text-center">
+                    <div class="spinner-border text-primary loading-spinner mb-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h4>Sedang Menganalisis Dokumen...</h4>
+                    <p class="text-muted">Mohon tunggu, proses analisis sedang berlangsung</p>
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress-container mt-4">
+                        <div class="progress mb-2">
+                            <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small id="progress-text" class="text-muted">Memulai proses...</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results State -->
+            <div id="results-state" class="fade-in" {% if not hasil %}style="display: none;"{% endif %}>
+                {% if hasil %}
+                <table class="table table-bordered text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Algoritma</th>
+                            <th>Skor (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Levenshtein Distance</td>
+                            <td>{{ hasil.levenshtein }}</td>
+                        </tr>
+                        <tr>
+                            <td>Content Based Filtering (TF-IDF Cosine)</td>
+                            <td>{{ hasil.cbf }}</td>
+                        </tr>
+                        <tr class="table-success">
+                            <td><b>Kombinasi (Final)</b></td>
+                            <td><b>{{ hasil.final }}</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-center mt-4">
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+                        </a>
+                        <a href="{{ url_for('download_pdf') }}" 
+                           class="btn btn-success btn-lg">
+                            <i class="bi bi-download"></i> Download PDF Report
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Check if we need to process files (only if no results are shown yet)
+        {% if not hasil %}
+        document.addEventListener('DOMContentLoaded', function() {
+            processAnalysis();
+        });
+        {% endif %}
+
+        function processAnalysis() {
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            // Simulate progress updates
+            let progress = 0;
+            const progressMessages = [
+                'Membaca dokumen...',
+                'Membersihkan teks...',
+                'Menjalankan algoritma Levenshtein...',
+                'Menjalankan algoritma CBF...',
+                'Menghasilkan laporan PDF...',
+                'Finalisasi hasil...'
+            ];
+            
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 90) progress = 90;
+                
+                progressBar.style.width = progress + '%';
+                progressBar.setAttribute('aria-valuenow', progress);
+                
+                const messageIndex = Math.floor((progress / 100) * progressMessages.length);
+                if (messageIndex < progressMessages.length) {
+                    progressText.textContent = progressMessages[messageIndex];
+                }
+            }, 800);
+
+            // Make the actual API call
+            fetch('/hasil', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Analysis failed');
+            })
+            .then(data => {
+                clearInterval(progressInterval);
+                
+                // Complete progress
+                progressBar.style.width = '100%';
+                progressText.textContent = 'Analisis selesai!';
+                
+                setTimeout(() => {
+                    displayResults(data);
+                }, 500);
+            })
+            .catch(error => {
+                clearInterval(progressInterval);
+                console.error('Error:', error);
+                
+                // Show error state
+                document.getElementById('loading-state').innerHTML = `
+                    <div class="text-center">
+                        <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                        <h4 class="mt-3 text-danger">Terjadi Kesalahan</h4>
+                        <p class="text-muted">Gagal memproses analisis. Silakan coba lagi.</p>
+                        <a href="${window.location.origin}/upload" class="btn btn-primary mt-3">
+                            <i class="bi bi-arrow-left"></i> Kembali ke Upload
+                        </a>
+                    </div>
+                `;
+            });
+        }
+
+        function displayResults(data) {
+            // Hide loading state
+            document.getElementById('loading-state').style.display = 'none';
+            
+            // Show results
+            const resultsHtml = `
+                <table class="table table-bordered text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Algoritma</th>
+                            <th>Skor (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Levenshtein Distance</td>
+                            <td>${data.levenshtein}</td>
+                        </tr>
+                        <tr>
+                            <td>Content Based Filtering (TF-IDF Cosine)</td>
+                            <td>${data.cbf}</td>
+                        </tr>
+                        <tr class="table-success">
+                            <td><b>Kombinasi (Final)</b></td>
+                            <td><b>${data.final}</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-center mt-4">
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="${window.location.origin}/dashboard" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+                        </a>
+                        <a href="${window.location.origin}/download-pdf" class="btn btn-success btn-lg">
+                            <i class="bi bi-download"></i> Download PDF Report
+                        </a>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('results-state').innerHTML = resultsHtml;
+            document.getElementById('results-state').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
