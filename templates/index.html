@@ -23,11 +23,11 @@
         {% endwith %}
         
 <section class="row">
-  <div class="col-md-6 mb-4">
-    <div class="card shadow">
+  <div class="col-12 col-lg-6 mb-4">
+    <div class="card shadow h-100">
       <div class="card-body">
-        <h2 class="card-title">Tambah Dokumen</h2>
-        <form id="form-tambah">
+        <h2 class="card-title">➕ Tambah Dokumen</h2>
+        <form id="form-tambah" class="form-mobile">
           <div class="mb-3">
             <label class="form-label">Judul</label>
             <input type="text" name="judul" class="form-control" required />
@@ -38,29 +38,29 @@
           </div>
           <div class="mb-3">
             <label class="form-label">Isi Dokumen</label>
-            <textarea name="isi" rows="8" class="form-control" required></textarea>
+            <textarea name="isi" rows="6" class="form-control" required></textarea>
           </div>
-          <button type="submit" class="btn btn-primary">Simpan</button>
-          <p id="tambah-status" class="text-muted mt-2"></p>
+          <button type="submit" class="btn btn-primary w-100">Simpan</button>
+          <p id="tambah-status" class="text-muted mt-2 text-center"></p>
         </form>
       </div>
     </div>
   </div>
 
-  <div class="col-md-6 mb-4">
-    <div class="card shadow">
+  <div class="col-12 col-lg-6 mb-4">
+    <div class="card shadow h-100">
       <div class="card-body">
-        <h2 class="card-title">Cek Plagiarisme</h2>
-        <form id="form-cek">
+        <h2 class="card-title">🔍 Cek Plagiarisme</h2>
+        <form id="form-cek" class="form-mobile">
           <div class="mb-3">
             <label class="form-label">Teks yang akan dicek</label>
-            <textarea name="isi" rows="10" class="form-control" required></textarea>
+            <textarea name="isi" rows="6" class="form-control" required></textarea>
           </div>
           <div class="mb-3">
             <label class="form-label">Jumlah Hasil Teratas</label>
             <input type="number" name="jumlah_teratas" value="5" min="1" max="20" class="form-control" />
           </div>
-          <button type="submit" class="btn btn-success">Cek</button>
+          <button type="submit" class="btn btn-success w-100">Cek</button>
         </form>
         <div id="hasil" class="mt-3"></div>
       </div>
@@ -79,11 +79,12 @@
 
 <div class="card shadow mb-4">
   <div class="card-body">
-    <h2 class="card-title">Upload File Skripsi</h2>
-    <form id="form-upload" enctype="multipart/form-data">
+    <h2 class="card-title">📄 Upload File Skripsi</h2>
+    <form id="form-upload" enctype="multipart/form-data" class="form-mobile">
       <div class="mb-3">
         <label class="form-label">File Skripsi</label>
         <input type="file" name="file" accept=".pdf,.docx" class="form-control" required />
+        <div class="form-text">Format yang didukung: PDF, DOCX</div>
       </div>
       <div class="mb-3">
         <input type="text" name="judul" placeholder="Judul (opsional)" class="form-control" />
@@ -91,8 +92,8 @@
       <div class="mb-3">
         <input type="text" name="penulis" placeholder="Penulis (opsional)" class="form-control" />
       </div>
-      <button type="submit" class="btn btn-primary">Upload</button>
-      <p id="upload-status" class="text-muted mt-2"></p>
+      <button type="submit" class="btn btn-primary w-100">Upload</button>
+      <p id="upload-status" class="text-muted mt-2 text-center"></p>
     </form>
   </div>
 </div>
@@ -184,7 +185,8 @@ fCek.addEventListener('submit', async (e) => {
     return;
   }
   const tbl = document.createElement('table');
-  tbl.innerHTML = `<thead><tr><th>ID</th><th>Judul</th><th>Penulis</th><th>Cosine</th><th>Levenshtein</th><th>Skor</th></tr></thead>`;
+  tbl.className = 'table table-responsive table-striped';
+  tbl.innerHTML = `<thead class="table-dark"><tr><th>ID</th><th>Judul</th><th>Penulis</th><th>Cosine</th><th>Levenshtein</th><th>Skor</th></tr></thead>`;
   const tb = document.createElement('tbody');
   data.forEach(r => {
     const tr = document.createElement('tr');
@@ -201,12 +203,13 @@ muatDaftar();
 
 <div class="card shadow mb-4">
   <div class="card-body">
-    <h2 class="card-title">Import dari Repositori Kampus</h2>
+    <h2 class="card-title">📥 Import dari Repositori Kampus</h2>
     <div class="mb-3">
+      <label class="form-label">Pilih Skripsi</label>
       <select id="select-skripsi" class="form-select"><option value="">Memuat...</option></select>
     </div>
-    <button id="btn-import" class="btn btn-info">Import Skripsi Terpilih</button>
-    <p id="import-status" class="text-muted mt-2"></p>
+    <button id="btn-import" class="btn btn-info w-100">Import Skripsi Terpilih</button>
+    <p id="import-status" class="text-muted mt-2 text-center"></p>
   </div>
 </div>
 
@@ -242,18 +245,20 @@ muatPilihanSkripsi();
 
 <div class="card shadow mb-4">
   <div class="card-body">
-    <h2 class="card-title">Cek Plagiarisme Dua Dokumen</h2>
-    <form id="form-dual-upload" enctype="multipart/form-data">
+    <h2 class="card-title">⚖️ Cek Plagiarisme Dua Dokumen</h2>
+    <form id="form-dual-upload" enctype="multipart/form-data" class="form-mobile">
       <div class="mb-3">
         <label class="form-label">Dokumen 1 (Asli)</label>
         <input type="file" name="file1" accept=".pdf,.docx" class="form-control" required />
+        <div class="form-text">Format yang didukung: PDF, DOCX</div>
       </div>
       <div class="mb-3">
         <label class="form-label">Dokumen 2 (Uji)</label>
         <input type="file" name="file2" accept=".pdf,.docx" class="form-control" required />
+        <div class="form-text">Format yang didukung: PDF, DOCX</div>
       </div>
-      <button type="submit" class="btn btn-warning">Upload & Bandingkan</button>
-      <p id="dual-status" class="text-muted mt-2"></p>
+      <button type="submit" class="btn btn-warning w-100">Upload & Bandingkan</button>
+      <p id="dual-status" class="text-muted mt-2 text-center"></p>
     </form>
     <div id="hasil-dual" class="mt-3"></div>
   </div>
@@ -273,9 +278,23 @@ fDual.addEventListener('submit', async (e) => {
   if (resp.ok) {
     st.textContent = 'Perbandingan selesai.';
     document.getElementById('hasil-dual').innerHTML =
-      `<p>Cosine: ${json.data.cosine.toFixed(4)}, 
-        Levenshtein: ${json.data.levenshtein.toFixed(4)}, 
-        Skor Gabungan: <b>${json.data.skor.toFixed(4)}</b></p>`;
+      `<div class="alert alert-info">
+        <h5>Hasil Perbandingan:</h5>
+        <div class="row text-center">
+          <div class="col-4">
+            <strong>Cosine:</strong><br>
+            <span class="badge bg-primary">${json.data.cosine.toFixed(4)}</span>
+          </div>
+          <div class="col-4">
+            <strong>Levenshtein:</strong><br>
+            <span class="badge bg-secondary">${json.data.levenshtein.toFixed(4)}</span>
+          </div>
+          <div class="col-4">
+            <strong>Skor Gabungan:</strong><br>
+            <span class="badge bg-success">${json.data.skor.toFixed(4)}</span>
+          </div>
+        </div>
+      </div>`;
   } else {
     st.textContent = json.error || 'Gagal memproses.';
   }

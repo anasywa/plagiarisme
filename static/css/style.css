@@ -3,8 +3,11 @@ body {
     margin: 0;
     padding: 0;
     background: #f4f4f9;
+    font-size: 16px; /* Better base font size for mobile */
+    line-height: 1.6;
 }
 
+/* Mobile-first responsive design */
 nav {
     background: #4a90e2;
     padding: 10px;
@@ -14,22 +17,27 @@ nav {
 nav a {
     color: white;
     text-decoration: none;
-    margin: 0 15px;
+    margin: 0 10px;
     font-weight: bold;
+    display: inline-block;
+    padding: 5px 10px;
 }
 
 nav a:hover {
     text-decoration: underline;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
 }
 
 main {
-    padding: 20px;
+    padding: 15px;
     max-width: 800px;
     margin: auto;
 }
 
 h1, h2 {
     color: #333;
+    text-align: center;
 }
 
 form {
@@ -42,10 +50,12 @@ form {
 
 input, textarea, button {
     margin: 8px 0;
-    padding: 10px;
+    padding: 12px;
     width: 100%;
-    max-width: 400px;
+    max-width: 100%;
     display: block;
+    box-sizing: border-box;
+    font-size: 16px; /* Prevents zoom on iOS */
 }
 
 button {
@@ -54,8 +64,117 @@ button {
     border: none;
     cursor: pointer;
     border-radius: 5px;
+    min-height: 44px; /* Touch-friendly minimum size */
 }
 
 button:hover {
     background: #357abd;
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 768px) {
+    main {
+        padding: 10px;
+    }
+    
+    nav a {
+        margin: 0 5px;
+        font-size: 14px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    form {
+        padding: 15px;
+        margin: 10px 0;
+    }
+    
+    .btn-group-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .btn-group-mobile .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+    
+    main {
+        padding: 5px;
+    }
+    
+    form {
+        padding: 10px;
+    }
+    
+    nav a {
+        display: block;
+        margin: 5px 0;
+        padding: 8px;
+    }
+}
+
+/* Responsive tables */
+@media (max-width: 768px) {
+    .table-responsive-mobile {
+        font-size: 12px;
+    }
+    
+    .table-responsive-mobile th,
+    .table-responsive-mobile td {
+        padding: 0.5rem !important;
+    }
+}
+
+/* Touch-friendly interactive elements */
+.btn, button, a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+/* Improved spacing for mobile */
+.mobile-spacing {
+    margin: 1rem 0;
+}
+
+/* Better form layout for mobile */
+.form-mobile label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-mobile input,
+.form-mobile textarea,
+.form-mobile select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Responsive navigation improvements */
+.navbar-mobile {
+    padding: 0.5rem 1rem;
+}
+
+.navbar-mobile .navbar-brand {
+    font-size: 1.1rem;
 }
